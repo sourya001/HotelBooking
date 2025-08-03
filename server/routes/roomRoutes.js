@@ -8,7 +8,7 @@ const roomRouter = express.Router();
 roomRouter.post("/", upload.array("images", 4), protect, createRoom);
 roomRouter.get("/", getRooms);
 roomRouter.get("/owner", protect, getOwnerRooms);
-roomRouter.get("/toggle-availability", protect, toggleRoomAvailability);
+roomRouter.post("/toggle-availability", protect, toggleRoomAvailability);
 export default roomRouter;
 // This file defines the room routes for creating a room with image uploads.
 // It uses the upload middleware to handle file uploads and the protect middleware to ensure that only authenticated users can access the route.
