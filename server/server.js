@@ -5,8 +5,11 @@ import connectDB from "./configs/db.js";
 import { clerkMiddleware } from "@clerk/express";
 import clerkWebhooks from "./controllers/ClerkWebHooks.js";
 import userRouter from "./routes/userRoutes.js";
+import hotelRouter from "./routes/hotelRoutes.js";
+import connectCloudinary from "./configs/cloudinary.js";
+hotelRouter;
 connectDB(); // Connect to MongoDB
-
+connectCloudinary(); // Connect to Cloudinary
 // Initialize Express app
 const app = express();
 
@@ -23,6 +26,7 @@ app.use(clerkMiddleware()); // Use Clerk middleware for authentication
 app.post("/api/clerk", clerkWebhooks);
 app.get("/", (req, res) => res.send("API is running..."));
 app.use("/api/user", userRouter);
+app.use("/api/hotels", hotelRouter);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
