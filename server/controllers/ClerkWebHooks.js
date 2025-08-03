@@ -1,10 +1,11 @@
 import User from "../models/User.js";
-import { WebHook } from "svix";
+import pkg from "svix";
+const { Webhook } = pkg;
 
 const clerkWebhooks = async (req, res) => {
   try {
     // Create a svix instance with clerk webhook secret
-    const whook = new WebHook(process.env.CLERK_WEBHOOK_SECRET);
+    const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
     //getting the headers from the request
     const headers = {
       "svix-id": req.headers["svix-id"],

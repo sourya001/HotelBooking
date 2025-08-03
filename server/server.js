@@ -10,12 +10,16 @@ connectDB(); // Connect to MongoDB
 const app = express();
 
 app.use(cors()); // Enable CORS for all routes
+
+// Raw body parser for webhooks (must be before express.json())
+app.use("/api/clerk", express.raw({ type: "application/json" }));
 app.use(express.json()); // Parse JSON bodies
 
 // Middleware for Clerk authentication
 app.use(clerkMiddleware()); // Use Clerk middleware for authentication
+
 //api to listen to Clerk webhooks
-app.use("/api/clerk", clerkWebhooks);
+app.post("/api/clerk", clerkWebhooks);
 app.get("/", (req, res) => res.send("API is running..."));
 
 const PORT = process.env.PORT || 3000;
