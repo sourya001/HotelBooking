@@ -16,6 +16,39 @@ const clerkWebhooks = async (req, res) => {
     await whook.verify(JSON.stringify(req.body), headers);
 
     // Getting data from request body
-    const { type, data } = req.body;
-  } catch (error) {}
+    const { data, type } = req.body;
+
+    const userData = {
+      _id: data.id,
+      email: data.email_addresses[0].email_address,
+      username: data.first_name + " " + data.last_name,
+      image: data.image_url,
+    };
+
+    //switch case to handle different webhook events
+    switch (type) {
+      case "user.created": {
+        await User.create(userData);
+        break;
+      }
+      case "user.updated": {
+        await User.findByIdAndUpdate(data._id, userData);
+        break;
+      }
+      case "user.deleted": {
+        await User.findByIdAndDelete(data._id);
+        break;
+      }
+      default:
+        break;
+    }
+    res.json({ success: true, message: "Webhook handled successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
+
+export default clerkWebhooks;
+// This function handles Clerk webhooks for user creation, update, and deletion events.
+// It verifies the webhook signature and processes the user data accordingly.

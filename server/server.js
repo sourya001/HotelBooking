@@ -3,6 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import connectDB from "./configs/db.js";
 import { clerkMiddleware } from "@clerk/express";
+import clerkWebhooks from "./controllers/ClerkWebHooks.js";
 connectDB(); // Connect to MongoDB
 
 // Initialize Express app
@@ -13,7 +14,8 @@ app.use(express.json()); // Parse JSON bodies
 
 // Middleware for Clerk authentication
 app.use(clerkMiddleware()); // Use Clerk middleware for authentication
-
+//api to listen to Clerk webhooks
+app.use("/api/clerk", clerkWebhooks);
 app.get("/", (req, res) => res.send("API is running..."));
 
 const PORT = process.env.PORT || 3000;
