@@ -1,8 +1,7 @@
-import React, { use } from "react";
-import { useAppContext } from "../context/appContext";
+import React from "react";
+import { useAppContext } from "../context/AppContext";
 import HotelCard from "./HotelCard";
 import Title from "./Title";
-import { useNavigate } from "react-router-dom";
 
 const FeaturedDestination = () => {
   const { rooms, navigate } = useAppContext();
@@ -24,7 +23,7 @@ const FeaturedDestination = () => {
         <button
           onClick={() => {
             navigate("/rooms");
-            scrollTo(0, 0);
+            window.scrollTo(0, 0);
           }}
           className="my-16 px-4 py-2 text-sm font-medium border border-gray-300 rounded bg-white hover:bg-gray-50 transition-all cursor-pointer"
         >
