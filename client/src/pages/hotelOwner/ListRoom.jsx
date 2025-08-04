@@ -1,9 +1,53 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { roomsDummyData } from "../../assets/assets";
 import Title from "../../components/Title";
+import toast from "react-hot-toast";
+import { useAppContext } from "../../context/appContext";
+import { useEffect } from "react";
+import { useAppContext } from "../../context/appContext";
 
 const ListRoom = () => {
-  const [rooms, setRooms] = useState(roomsDummyData);
+  const [rooms, setRooms] = useState([]);
+  const { axios, getToken } = useAppContext();
+
+  // Fetch rooms from the server
+  const fetchRooms = async () => {
+    try {
+      const { data } = await axios.get("/api/rooms/owner", {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (data.success) {
+        setRooms(data.rooms);
+      } else {
+        toast.error(data.message || "Failed to fetch rooms");
+      }
+    } catch (error) {
+      toast.error("An error occurred while fetching rooms");
+    }
+  };
+
+  // Toggle room availability
+  const toggleAvailability = async (roomId) => {
+    const { data } = await axios.post(
+      "/api/rooms/toggle-availability",
+      { roomId },
+      {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      }
+    );
+    if (data.success) {
+      toast.success("Room availability updated successfully");
+      fetchRooms();
+    } else {
+      toast.error(data.message || "Failed to update room availability");
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchRooms();
+    }
+  }, [user]);
 
   return (
     <div>
@@ -46,6 +90,7 @@ const ListRoom = () => {
                 <td className="py-3 px-4 border-t border-gray-300 text-sm text-red-500 text-center">
                   <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
                     <input
+                      onChange={() => toggleAvailability(item._id)}
                       type="checkbox"
                       className="sr-only peer"
                       checked={item.isAvailable}
