@@ -15,7 +15,13 @@ connectCloudinary(); // Connect to Cloudinary
 // Initialize Express app
 const app = express();
 
-app.use(cors()); // Enable CORS for all routes
+// CORS configuration
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:3000", "https://hotel-booking-frontend.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+})); // Enable CORS for all routes
 
 // Raw body parser for webhooks (must be before express.json())
 app.use("/api/clerk", express.raw({ type: "application/json" }));

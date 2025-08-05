@@ -20,6 +20,7 @@ const AppProvider = ({ children }) => {
   // Fetch rooms from the server
   const fetchRooms = async () => {
       try {
+        console.log("Fetching rooms from:", axios.defaults.baseURL + "/api/rooms");
         const {data}= await axios.get("/api/rooms")
         if(data.success) {
           setRooms(data.rooms);
@@ -27,7 +28,14 @@ const AppProvider = ({ children }) => {
           toast.error(data.message || "Failed to fetch rooms");
         }
       } catch (error) {
-        toast.error("An error occurred while fetching rooms");
+        console.error("Error fetching rooms:", error);
+        if (error.response) {
+          toast.error(`Server error: ${error.response.status} - ${error.response.data?.message || error.message}`);
+        } else if (error.request) {
+          toast.error("Network error: Could not connect to server");
+        } else {
+          toast.error("An error occurred while fetching rooms");
+        }
       }
     };
 
@@ -75,6 +83,7 @@ const AppProvider = ({ children }) => {
     rooms,
     setRooms,
     axios,
+    toast,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

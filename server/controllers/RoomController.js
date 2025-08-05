@@ -41,6 +41,7 @@ export const createRoom = async (req, res) => {
 //api to get all rooms
 export const getRooms = async (req, res) => {
   try {
+    console.log("Fetching rooms...");
     const rooms = await Room.find({ isAvailable: true })
       .populate({
         path: "hotel",
@@ -50,12 +51,15 @@ export const getRooms = async (req, res) => {
         },
       })
       .sort({ createdAt: -1 });
+    
+    console.log(`Found ${rooms.length} rooms`);
     res.json({
       success: true,
       rooms,
     });
   } catch (error) {
-    res.json({
+    console.error("Error fetching rooms:", error);
+    res.status(500).json({
       success: false,
       message: "Error fetching rooms",
       error: error.message,

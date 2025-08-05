@@ -68,7 +68,7 @@ export const createBooking = async (req, res) => {
       Math.ceil(
         (new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24)
       );
-    const booking = new Booking.create({
+    const booking = await Booking.create({
       user,
       room,
       hotel: roomData.hotel._id,
@@ -119,7 +119,7 @@ export const getUserBookings = async (req, res) => {
 // GET /api/bookings/admin
 export const getAllBookings = async (req, res) => {
   try {
-    const hotel = await Hotel.findOne({ owner: req.auth.user._id });
+    const hotel = await Hotel.findOne({ owner: req.user._id });
     if (!hotel) {
       return res.json({
         success: false,
@@ -129,7 +129,7 @@ export const getAllBookings = async (req, res) => {
     const bookings = await Booking.find({ hotel: hotel._id })
       .populate("room hotel user")
       .sort({ createdAt: -1 });
-    res.json({ success: true, bookings });
+    
     // Total Bookings
     const totalBookings = bookings.length;
     // Total Revenue
@@ -137,9 +137,10 @@ export const getAllBookings = async (req, res) => {
       (acc, booking) => acc + booking.totalPrice,
       0
     );
+    
     res.json({
       success: true,
-      dashboardData: {
+      dashBoardData: {
         totalBookings,
         totalRevenue,
         bookings,
@@ -148,7 +149,7 @@ export const getAllBookings = async (req, res) => {
   } catch (error) {
     res.json({
       success: false,
-      message: "Error fetching bookings" || error.message,
+      message: error.message || "Error fetching bookings",
     });
   }
 };
