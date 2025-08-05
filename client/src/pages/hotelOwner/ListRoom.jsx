@@ -11,8 +11,9 @@ const ListRoom = () => {
   // Fetch rooms from the server
   const fetchRooms = async () => {
     try {
+      const token = await getToken();
       const { data } = await axios.get("/api/rooms/owner", {
-        headers: { Authorization: `Bearer ${getToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (data.success) {
         setRooms(data.rooms);
@@ -26,18 +27,23 @@ const ListRoom = () => {
 
   // Toggle room availability
   const toggleAvailability = async (roomId) => {
-    const { data } = await axios.post(
-      "/api/rooms/toggle-availability",
-      { roomId },
-      {
-        headers: { Authorization: `Bearer ${getToken()}` },
+    try {
+      const token = await getToken();
+      const { data } = await axios.post(
+        "/api/rooms/toggle-availability",
+        { roomId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (data.success) {
+        toast.success("Room availability updated successfully");
+        fetchRooms();
+      } else {
+        toast.error(data.message || "Failed to update room availability");
       }
-    );
-    if (data.success) {
-      toast.success("Room availability updated successfully");
-      fetchRooms();
-    } else {
-      toast.error(data.message || "Failed to update room availability");
+    } catch (error) {
+      toast.error("An error occurred while updating room availability");
     }
   };
 

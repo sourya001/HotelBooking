@@ -16,12 +16,28 @@ connectCloudinary(); // Connect to Cloudinary
 const app = express();
 
 // CORS configuration
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000", "https://hotel-booking-frontend.vercel.app"],
+const corsOptions = {
+  origin: [
+    "http://localhost:5173", 
+    "http://localhost:3000", 
+    "https://hotel-booking-frontend.vercel.app",
+    "https://hotel-booking-nine-mu.vercel.app",
+    // Allow any Vercel preview URLs for this project
+    /^https:\/\/hotel-booking-.*\.vercel\.app$/
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
-})); // Enable CORS for all routes
+};
+
+// Log CORS requests for debugging
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log(`Request from origin: ${origin}`);
+  next();
+});
+
+app.use(cors(corsOptions)); // Enable CORS for all routes
 
 // Raw body parser for webhooks (must be before express.json())
 app.use("/api/clerk", express.raw({ type: "application/json" }));

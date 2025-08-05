@@ -4,9 +4,18 @@ import User from "../models/User.js";
 export const registerHotel = async (req, res) => {
   try {
     const { name, address, contact, city } = req.body;
+    
+    // Check if user exists and has valid _id
+    if (!req.user || !req.user._id) {
+      return res.json({
+        success: false,
+        message: "User authentication failed. Please try logging in again.",
+      });
+    }
+    
     const owner = req.user._id;
 
-    // Check if the user is already resgistered
+    // Check if the user is already registered
     const hotel = await Hotel.findOne({ owner });
     if (hotel) {
       return res.json({
@@ -14,13 +23,16 @@ export const registerHotel = async (req, res) => {
         message: "You have already registered a hotel.",
       });
     }
+    
     await Hotel.create({ name, address, contact, city, owner });
     await User.findByIdAndUpdate(owner, { role: "hotelOwner" });
+    
     res.json({
       success: true,
       message: "Hotel registered successfully",
     });
   } catch (error) {
+    console.error("Hotel registration error:", error);
     res.json({ success: false, message: error.message });
   }
 };

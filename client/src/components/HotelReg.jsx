@@ -3,7 +3,7 @@ import { assets, cities } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import { toast } from "react-hot-toast";
 const HotelReg = () => {
-  const { setShowHotelReg, axios, getToken, setIsOwner } = useAppContext();
+  const { setShowHotelReg, axios, getToken, setIsOwner, navigate } = useAppContext();
   const [name, setName] = React.useState("");
   const [address, setAddress] = React.useState("");
   const [contact, setContact] = React.useState("");
@@ -12,6 +12,11 @@ const HotelReg = () => {
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault();
+      console.log("Starting hotel registration...");
+      
+      const token = await getToken();
+      console.log("Token obtained:", token ? "✓" : "✗");
+      
       const { data } = await axios.post(
         `/api/hotels`,
         {
@@ -22,20 +27,30 @@ const HotelReg = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${getToken()}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
+      
+      console.log("Server response:", data);
+      
       if (data.success) {
         toast.success("Hotel registered successfully!");
         setIsOwner(true);
         setShowHotelReg(false);
+        // Navigate to owner dashboard after successful registration
+        setTimeout(() => {
+          navigate("/owner");
+        }, 1000);
       } else {
         toast.error(data.message || "Failed to register hotel.");
         setShowHotelReg(false);
       }
     } catch (error) {
-      toast.error("Error registering hotel:", error);
+      console.error("Error registering hotel:", error);
+      console.error("Error response:", error.response?.data);
+      toast.error(error.response?.data?.message || error.message || "An error occurred while registering hotel");
+      setShowHotelReg(false);
     }
   };
 
