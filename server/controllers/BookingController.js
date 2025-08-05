@@ -2,6 +2,7 @@
 import Booking from "../models/Booking.js";
 import Room from "../models/Room.js";
 import Hotel from "../models/Hotel.js";
+import transporter from "../configs/nodemailer.js";
 const checkAvailability = async ({ checkInDate, checkOutDate, room }) => {
   // Validate input
   // Logic to check room availability
@@ -75,6 +76,13 @@ export const createBooking = async (req, res) => {
       checkOutDate,
       guests: +guests, // Ensure guests is a number
       totalPrice,
+    });
+
+    await transporter.sendMail({
+      from: process.env.SENDER_EMAIL,
+      to: req.user.email,
+      subject: "Booking Confirmation",
+      text: `Your booking for ${roomData.name} has been confirmed! Check-in: ${checkInDate}, Check-out: ${checkOutDate}. Total Price: ${totalPrice}`,
     });
 
     res.json({
