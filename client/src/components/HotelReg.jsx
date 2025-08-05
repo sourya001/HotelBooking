@@ -1,7 +1,7 @@
 import React from "react";
 import { assets, cities } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 const HotelReg = () => {
   const { setShowHotelReg, axios, getToken, setIsOwner } = useAppContext();
   const [name, setName] = React.useState("");

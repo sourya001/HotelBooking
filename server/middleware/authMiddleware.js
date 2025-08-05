@@ -1,6 +1,6 @@
-import User from "../models/User";
+import User from "../models/User.js";
 
-//Middleware to chech if the user is authenticated
+//Middleware to check if the user is authenticated
 export const protect = async (req, res, next) => {
   const { userId } = req.auth;
   if (!userId) {

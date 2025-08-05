@@ -1,10 +1,8 @@
-import React, { use, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { roomsDummyData } from "../../assets/assets";
 import Title from "../../components/Title";
 import toast from "react-hot-toast";
-import { useAppContext } from "../../context/appContext";
-import { useEffect } from "react";
-import { useAppContext } from "../../context/appContext";
+import { useAppContext } from "../../context/AppContext";
 
 const ListRoom = () => {
   const [rooms, setRooms] = useState([]);

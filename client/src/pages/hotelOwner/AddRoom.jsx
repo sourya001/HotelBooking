@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import Title from "../../components/Title";
 import { assets } from "../../assets/assets";
-import { useAppContext } from "../../context/appContext";
+import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
-import { data } from "react-router-dom";
-import { useAppContext } from "../../context/appContext";
 
 const AddRoom = () => {
   const { axios, getToken } = useAppContext();

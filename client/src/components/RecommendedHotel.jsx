@@ -1,11 +1,11 @@
-import React, { use } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import HotelCard from "./HotelCard";
 import Title from "./Title";
 
 const RecommendedHotel = () => {
   const { rooms, searchedCities } = useAppContext();
-  const [recommended, setRecommended] = React.useState([]);
+  const [recommended, setRecommended] = useState([]);
   const filterHotels = () => {
     const filteredHotels = rooms
       .slice()

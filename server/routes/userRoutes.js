@@ -1,11 +1,11 @@
 import express from "express";
-import { protect } from "../middleware/authMiddleware";
-import { getUserData, storeRecentSearchedCities } from "../controllers/UserController";
+import { protect } from "../middleware/authMiddleware.js";
+import { getUserData, storeRecentSearchCities } from "../controllers/UserController.js";
 
 const userRouter = express.Router();
 
 userRouter.get("/", protect, getUserData);
-userRouter.post("/store-recent-search", protect, storeRecentSearchedCities);
+userRouter.post("/store-recent-search", protect, storeRecentSearchCities);
 
 export default userRouter;
 // This file defines the user routes for retrieving user data.
