@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { assets, facilityIcons, roomCommonData } from "../assets/assets";
 import StarRating from "../components/StarRating";
 import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
 // RoomDetails component to display room information
 const RoomDetails = () => {
@@ -14,6 +15,65 @@ const RoomDetails = () => {
   const [checkOutDate, setCheckOutDate] = useState("");
   const [guests, setGuests] = useState(0);
   const [isAvailable, setIsAvailable] = useState(false);
+
+  const handleCheckAvailability = async () => {
+    try {
+      // Check if check-in and check-out dates are selected
+      if (checkInDate >= checkOutDate) {
+        toast.error("Check-out date must be after check-in date");
+        return;
+      }
+      const { data } = await axios.post("/api/bookings/check-availability", {
+        room: id,
+        checkInDate,
+        checkOutDate,
+      });
+      if (data.success) {
+        if (data.isAvailable) {
+          setIsAvailable(true);
+          toast.success("Room is available for booking");
+        } else {
+          setIsAvailable(false);
+          toast.error("Room is not available for the selected dates");
+        }
+      }
+    } catch (error) {
+      toast.error("Error checking availability:", error);
+    }
+  };
+
+  // Handle form submission for booking
+  const onSubmitHandler = async (e) => {
+    try {
+      e.preventDefault();
+      if (!isAvailable) {
+        return handleCheckAvailability();
+      } else {
+        const { data } = await axios.post(
+          "/api/bookings/book",
+          {
+            room: id,
+            checkInDate,
+            checkOutDate,
+            guests,
+            PaymentMethod: "Cash",
+          },
+          {
+            headers: { Authorization: `Bearer ${await getToken()}` },
+          }
+        );
+        if (data.success) {
+          toast.success("Room booked successfully");
+          navigate("/my-bookings");
+          scrollTo(0, 0);
+        } else {
+          toast.error(data.message || "Failed to book room");
+        }
+      }
+    } catch (error) {
+      toast.error("An error occurred while booking the room");
+    }
+  };
 
   // Fetch room details based on the room ID
 
@@ -101,7 +161,10 @@ const RoomDetails = () => {
         </div>
 
         {/* CheckIn CheckOut Form */}
-        <form className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] p-6 rounded-xl mx-auto mt-16 max-w-6xl">
+        <form
+          onSubmit={onSubmitHandler}
+          className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] p-6 rounded-xl mx-auto mt-16 max-w-6xl"
+        >
           <div className="flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500">
             <div className="flex flex-col">
               <label htmlFor="checkInDate" className="font-medium">
