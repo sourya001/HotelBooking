@@ -9,6 +9,9 @@ import hotelRouter from "./routes/hotelRoutes.js";
 import connectCloudinary from "./configs/cloudinary.js";
 import roomRouter from "./routes/roomRoutes.js";
 import bookingRouter from "./routes/bookingRoutes.js";
+import stripeWebHooks from "./controllers/StripeWebhooks.js";
+
+
 hotelRouter;
 connectDB(); // Connect to MongoDB
 connectCloudinary(); // Connect to Cloudinary
@@ -18,16 +21,16 @@ const app = express();
 // CORS configuration
 const corsOptions = {
   origin: [
-    "http://localhost:5173", 
-    "http://localhost:3000", 
+    "http://localhost:5173",
+    "http://localhost:3000",
     "https://hotel-booking-frontend.vercel.app",
     "https://hotel-booking-nine-mu.vercel.app",
     // Allow any Vercel preview URLs for this project
-    /^https:\/\/hotel-booking-.*\.vercel\.app$/
+    /^https:\/\/hotel-booking-.*\.vercel\.app$/,
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  credentials: true,
 };
 
 // Log CORS requests for debugging
@@ -41,6 +44,14 @@ app.use(cors(corsOptions)); // Enable CORS for all routes
 
 // Raw body parser for webhooks (must be before express.json())
 app.use("/api/clerk", express.raw({ type: "application/json" }));
+
+// API to listen to stripe webhooks
+app.post(
+  "/api/stripe",
+  express.raw({ type: "application/json" }),
+  stripeWebHooks
+);
+
 app.use(express.json()); // Parse JSON bodies
 
 // Middleware for Clerk authentication
