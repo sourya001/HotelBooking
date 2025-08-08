@@ -15,5 +15,5 @@ bookingRouter.post("/check-availability", checkAvailabilityAPI);
 bookingRouter.post("/book", protect, createBooking);
 bookingRouter.get("/user", protect, getUserBookings);
 bookingRouter.get("/hotel", protect, getAllBookings);
-bookingRouter.post("/stripe-payment", protect, stripePayments);
+bookingRouter.post("/stripe-payments", protect, stripePayments);
 export default bookingRouter;

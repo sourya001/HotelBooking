@@ -36,9 +36,12 @@ const RoomDetails = () => {
           setIsAvailable(false);
           toast.error("Room is not available for the selected dates");
         }
+      } else {
+        toast.error(data.message || "Failed to check availability");
       }
     } catch (error) {
-      toast.error("Error checking availability:", error);
+      console.error("Error checking availability:", error);
+      toast.error("Error checking availability");
     }
   };
 
@@ -71,6 +74,7 @@ const RoomDetails = () => {
         }
       }
     } catch (error) {
+      console.error("Error booking room:", error);
       toast.error("An error occurred while booking the room");
     }
   };

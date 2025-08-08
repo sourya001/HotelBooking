@@ -20,7 +20,8 @@ const MyBookings = () => {
         toast.error(data.message || "Failed to fetch bookings");
       }
     } catch (error) {
-      toast.error("Error fetching bookings:", error);
+      console.error("Error fetching bookings:", error);
+      toast.error("Error fetching bookings");
     }
   };
 
@@ -39,7 +40,8 @@ const MyBookings = () => {
         toast.error(data.message || "Failed to initiate payment");
       }
     } catch (error) {
-      toast.error("Error processing payment:", error);
+      console.error("Error processing payment:", error);
+      toast.error("Error processing payment");
     }
   };
 
@@ -99,13 +101,13 @@ const MyBookings = () => {
             <div className="flex flex-row md:items-center md:gap-12 mt-3 gap-8">
               <div>
                 <p>Check-In:</p>
-                <p className='className="text-gray-500 text-sm"'>
+                <p className="text-gray-500 text-sm">
                   {new Date(booking.checkInDate).toDateString()}
                 </p>
               </div>
               <div>
                 <p>Check-Out:</p>
-                <p className='className="text-gray-500 text-sm"'>
+                <p className="text-gray-500 text-sm">
                   {new Date(booking.checkOutDate).toDateString()}
                 </p>
               </div>
