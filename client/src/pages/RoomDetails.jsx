@@ -56,7 +56,7 @@ const RoomDetails = () => {
             checkInDate,
             checkOutDate,
             guests,
-            PaymentMethod: "Cash",
+            paymentMethod: "Cash",
           },
           {
             headers: { Authorization: `Bearer ${await getToken()}` },

@@ -34,7 +34,7 @@ export const checkAvailabilityAPI = async (req, res) => {
   } catch (error) {
     res.json({
       success: false,
-      message: "Error checking availability" || error.message,
+      message: error.message || "Error checking availability",
     });
   }
 };
@@ -43,8 +43,19 @@ export const checkAvailabilityAPI = async (req, res) => {
 // POST /api/bookings/book
 export const createBooking = async (req, res) => {
   try {
-    const { room, checkInDate, checkOutDate, guests } = req.body;
+    console.log("Booking request received:", req.body);
+    console.log("User from auth:", req.user);
+    
+    const { room, checkInDate, checkOutDate, guests, paymentMethod } = req.body;
     const user = req.user._id; // Assuming user ID is stored in req.user
+
+    // Validate required fields
+    if (!room || !checkInDate || !checkOutDate || !guests) {
+      return res.json({
+        success: false,
+        message: "Missing required booking information",
+      });
+    }
 
     // Before creating a booking, check if the room is available
 
@@ -77,13 +88,14 @@ export const createBooking = async (req, res) => {
       checkOutDate,
       guests: +guests, // Ensure guests is a number
       totalPrice,
+      paymentMethod: paymentMethod || "Pay On Arrival",
     });
 
     await transporter.sendMail({
       from: process.env.SENDER_EMAIL,
       to: req.user.email,
       subject: "Booking Confirmation",
-      text: `Your booking for ${roomData.name} has been confirmed! Check-in: ${checkInDate}, Check-out: ${checkOutDate}. Total Price: ${totalPrice}`,
+      text: `Your booking for ${roomData.roomType} at ${roomData.hotel.name} has been confirmed! Check-in: ${checkInDate}, Check-out: ${checkOutDate}. Total Price: $${totalPrice}`,
     });
 
     res.json({
@@ -92,9 +104,10 @@ export const createBooking = async (req, res) => {
       booking,
     });
   } catch (error) {
+    console.error("Error creating booking:", error);
     res.json({
       success: false,
-      message: "Error creating booking" || error.message,
+      message: error.message || "Error creating booking",
     });
   }
 };
@@ -111,7 +124,7 @@ export const getUserBookings = async (req, res) => {
   } catch (error) {
     res.json({
       success: false,
-      message: "Error fetching user bookings" || error.message,
+      message: error.message || "Error fetching user bookings",
     });
   }
 };
