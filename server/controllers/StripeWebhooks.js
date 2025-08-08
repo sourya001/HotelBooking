@@ -1,8 +1,7 @@
 import Stripe from "stripe";
-import Booking from "../models/Booking";
-import { response } from "express";
+import Booking from "../models/Booking.js";
 
-export const stripeWebHooks = async (req, res) => {
+const stripeWebHooks = async (req, res) => {
   // stripe gateway initialization
   const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
   const sig = req.headers["stripe-signature"];
@@ -38,5 +37,7 @@ export const stripeWebHooks = async (req, res) => {
   } else {
     console.log(`Unhandled event type ${event.type}`);
   }
-  response.json({ received: true });
+  res.json({ received: true });
 };
+
+export default stripeWebHooks;
