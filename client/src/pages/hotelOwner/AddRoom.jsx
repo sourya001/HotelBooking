@@ -15,7 +15,7 @@ const AddRoom = () => {
   });
   const [inputs, setInputs] = useState({
     roomType: "",
-    pricePerNight: 0,
+    pricePerNight: "",
     amenities: {
       "Free WiFi": false,
       "Free Breakfast": false,
@@ -29,9 +29,9 @@ const AddRoom = () => {
     // check if all inputs are filled
     if (
       !inputs.roomType ||
-      !inputs.pricePerNight ||
-      !inputs.amenities ||
-      !Object.values(images).some((image) => !image)
+      !inputs.pricePerNight || 
+      Number(inputs.pricePerNight) <= 0 ||
+      Object.values(images).some((image) => !image)
     ) {
       toast.error("Please fill all the fields and upload images.");
       return;
@@ -63,7 +63,7 @@ const AddRoom = () => {
         toast.success("Room added successfully!");
         setInputs({
           roomType: "",
-          pricePerNight: 0,
+          pricePerNight: "",
           amenities: {
             "Free WiFi": false,
             "Free Breakfast": false,
@@ -82,7 +82,7 @@ const AddRoom = () => {
         toast.error(data.message || "Failed to add room.");
       }
     } catch (error) {
-      toast.error(data.message || "Failed to add room. Please try again.");
+      toast.error(error.response?.data?.message || "Failed to add room. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -143,7 +143,7 @@ const AddRoom = () => {
           </p>
           <input
             type="number"
-            placeholder="0"
+            placeholder="Enter price"
             className="border border-gray-300 mt-1 rounded p-2 w-24"
             value={inputs.pricePerNight}
             onChange={(e) =>
