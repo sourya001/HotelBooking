@@ -1,24 +1,25 @@
 import User from "../models/User.js";
-import pkg from "svix";
-const { Webhook } = pkg;
+import { Webhook } from "svix";
 
 const clerkWebhooks = async (req, res) => {
   try {
     // Create a svix instance with clerk webhook secret
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-    //getting the headers from the request
+    
+    // Get the headers from the request
     const headers = {
       "svix-id": req.headers["svix-id"],
-      "svix-timestamp": req.headers["svix-timestamp"],
+      "svix-timestamp": req.headers["svix-timestamp"], 
       "svix-signature": req.headers["svix-signature"],
     };
 
-    //verifying headers
-    await whook.verify(JSON.stringify(req.body), headers);
+    // Verify the webhook signature using raw body
+    const body = req.body;
+    const payload = await whook.verify(body, headers);
 
-    // Getting data from request body
-    const { data, type } = req.body;
-    
+    // Getting data from verified payload
+    const { data, type } = payload;
+
     console.log("Webhook received:", type, "for user:", data.id);
 
     //switch case to handle different webhook events
@@ -26,10 +27,12 @@ const clerkWebhooks = async (req, res) => {
       case "user.created": {
         const userData = {
           _id: data.id,
-          email: data.email_addresses?.[0]?.email_address || "unknown@email.com",
-          username: (data.first_name && data.last_name) 
-            ? `${data.first_name} ${data.last_name}` 
-            : data.username || "Unknown User",
+          email:
+            data.email_addresses?.[0]?.email_address || "unknown@email.com",
+          username:
+            data.first_name && data.last_name
+              ? `${data.first_name} ${data.last_name}`
+              : data.username || "Unknown User",
           image: data.image_url || "",
         };
         console.log("Creating user:", userData);
@@ -39,10 +42,12 @@ const clerkWebhooks = async (req, res) => {
       }
       case "user.updated": {
         const userData = {
-          email: data.email_addresses?.[0]?.email_address || "unknown@email.com",
-          username: (data.first_name && data.last_name) 
-            ? `${data.first_name} ${data.last_name}` 
-            : data.username || "Unknown User",
+          email:
+            data.email_addresses?.[0]?.email_address || "unknown@email.com",
+          username:
+            data.first_name && data.last_name
+              ? `${data.first_name} ${data.last_name}`
+              : data.username || "Unknown User",
           image: data.image_url || "",
         };
         console.log("Updating user:", data.id);
@@ -64,11 +69,23 @@ const clerkWebhooks = async (req, res) => {
   } catch (error) {
     console.error("Webhook error:", error);
     console.error("Error details:", error.message);
-    console.error("Stack trace:", error.stack);
-    res.status(500).json({ 
-      success: false, 
+    console.error("Headers received:", req.headers);
+    console.error("Body type:", typeof req.body);
+    console.error("Body length:", req.body?.length);
+    
+    // Check if it's a signature verification error
+    if (error.message.includes('signature') || error.message.includes('verification')) {
+      console.error("Signature verification failed. Check CLERK_WEBHOOK_SECRET");
+      return res.status(400).json({
+        success: false,
+        message: "Webhook signature verification failed",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
       message: "Internal Server Error",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };

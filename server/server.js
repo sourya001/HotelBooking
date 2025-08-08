@@ -42,23 +42,20 @@ app.use((req, res, next) => {
 
 app.use(cors(corsOptions)); // Enable CORS for all routes
 
-// Raw body parser for webhooks (must be before express.json())
-app.use("/api/clerk", express.raw({ type: "application/json" }));
-
-// API to listen to stripe webhooks
+// API to listen to stripe webhooks (needs raw body)
 app.post(
   "/api/stripe",
   express.raw({ type: "application/json" }),
   stripeWebHooks
 );
 
+// API to listen to Clerk webhooks (needs raw body for signature verification)
+app.post("/api/clerk", express.raw({ type: "application/json" }), clerkWebhooks);
+
 app.use(express.json()); // Parse JSON bodies
 
 // Middleware for Clerk authentication
 app.use(clerkMiddleware()); // Use Clerk middleware for authentication
-
-//api to listen to Clerk webhooks
-app.post("/api/clerk", clerkWebhooks);
 app.get("/", (req, res) => res.send("API is running..."));
 app.use("/api/user", userRouter); // Add user routes
 app.use("/api/hotels", hotelRouter); // Add hotel routes
