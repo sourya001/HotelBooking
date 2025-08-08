@@ -2,6 +2,7 @@
 import Booking from "../models/Booking.js";
 import Room from "../models/Room.js";
 import Hotel from "../models/Hotel.js";
+import Stripe from "stripe";
 import transporter from "../configs/nodemailer.js";
 const checkAvailability = async ({ checkInDate, checkOutDate, room }) => {
   // Validate input
@@ -129,7 +130,7 @@ export const getAllBookings = async (req, res) => {
     const bookings = await Booking.find({ hotel: hotel._id })
       .populate("room hotel user")
       .sort({ createdAt: -1 });
-    
+
     // Total Bookings
     const totalBookings = bookings.length;
     // Total Revenue
@@ -137,7 +138,7 @@ export const getAllBookings = async (req, res) => {
       (acc, booking) => acc + booking.totalPrice,
       0
     );
-    
+
     res.json({
       success: true,
       dashBoardData: {
@@ -150,6 +151,52 @@ export const getAllBookings = async (req, res) => {
     res.json({
       success: false,
       message: error.message || "Error fetching bookings",
+    });
+  }
+};
+
+export const stripePayments = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+    const booking = await Booking.findById(bookingId);
+    const roomData = await Room.findById(booking.room).populate("hotel");
+    const totalPrice = booking.totalPrice;
+
+    const { origin } = req.headers;
+
+    const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+    const line_items = [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: roomData.hotel.name,
+          },
+          unit_amount: totalPrice * 100, // Convert to cents
+        },
+        quantity: 1,
+      },
+    ];
+
+    //create a checkout session
+    const session = await stripeInstance.checkout.sessions.create({
+      line_items,
+      mode: "payment",
+      success_url: `${origin}/loader/my-bookings`,
+      cancel_url: `${origin}/my-bookings`,
+      metadata: {
+        bookingId,
+      },
+    });
+    res.json({
+      success: true,
+      url: session.url,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "Error creating Stripe checkout session",
     });
   }
 };
