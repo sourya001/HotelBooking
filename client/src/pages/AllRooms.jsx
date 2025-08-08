@@ -3,6 +3,8 @@ import { assets, facilityIcons, roomsDummyData } from "../assets/assets";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import StarRating from "../components/StarRating";
 import { useAppContext } from "../context/AppContext";
+import PageTransition from "../components/PageTransition";
+import { motion } from "framer-motion";
 
 // CheckBox component for filter options
 const CheckBox = ({ label, selected = false, onChange = () => {} }) => {
@@ -129,7 +131,8 @@ const AllRooms = () => {
   };
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row items-start justify-between pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32">
+    <PageTransition>
+      <div className="flex flex-col-reverse lg:flex-row items-start justify-between pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32">
       <div>
         <div className="flex flex-col items-start text-left">
           <h1 className="font-playfair text-4xl md:text-[40px]">Hotel Rooms</h1>
@@ -139,10 +142,21 @@ const AllRooms = () => {
           </p>
         </div>
 
-        {filteredRooms.map((room) => (
-          <div
+        {filteredRooms.map((room, index) => (
+          <motion.div
             key={room._id}
             className="flex flex-col md:flex-row items-start py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.5, 
+              delay: index * 0.1,
+              ease: [0.25, 0.25, 0, 1]
+            }}
+            whileHover={{ 
+              scale: 1.02,
+              transition: { duration: 0.2 }
+            }}
           >
             <img
               onClick={() => {
@@ -194,7 +208,7 @@ const AllRooms = () => {
                 ${room.pricePerNight} /night
               </p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -242,7 +256,8 @@ const AllRooms = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 

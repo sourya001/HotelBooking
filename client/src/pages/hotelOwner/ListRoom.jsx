@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { roomsDummyData } from "../../assets/assets";
 import Title from "../../components/Title";
+import PageTransition from "../../components/PageTransition";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
 
@@ -54,7 +56,8 @@ const ListRoom = () => {
   }, [user]);
 
   return (
-    <div>
+    <PageTransition>
+      <div>
       <Title
         align="left"
         font="outfit"
@@ -108,7 +111,8 @@ const ListRoom = () => {
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 

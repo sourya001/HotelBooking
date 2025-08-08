@@ -1,44 +1,46 @@
 import React from "react";
 import Navbar from "./components/Navbar";
-import { Route, Routes, useLocation } from "react-router-dom";
-import Home from "./pages/Home";
+import { useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
-import AllRooms from "./pages/AllRooms";
-import RoomDetails from "./pages/RoomDetails";
-import MyBookings from "./pages/MyBookings";
 import HotelReg from "./components/HotelReg";
-import Layout from "./pages/hotelOwner/Layout";
-import Dashboard from "./pages/hotelOwner/Dashboard";
-import AddRoom from "./pages/hotelOwner/AddRoom";
-import ListRoom from "./pages/hotelOwner/ListRoom";
+import AnimatedRoutes from "./components/AnimatedRoutes";
+import BackToTopButton from "./components/BackToTopButton";
 import { Toaster } from "react-hot-toast";
 import { useAppContext } from "./context/AppContext";
-import Loader from "./components/Loader";
+import { motion } from "framer-motion";
+import { useSmoothScroll } from "./hooks/useSmoothScroll";
 
 const App = () => {
-  const isOwnerPath = useLocation().pathname.includes("owner");
+  const location = useLocation();
+  const isOwnerPath = location.pathname.includes("owner");
   const { showHotelReg } = useAppContext();
+
+  // Enable smooth scrolling
+  useSmoothScroll();
+
+  const appVariants = {
+    initial: { opacity: 0 },
+    animate: { 
+      opacity: 1,
+      transition: { duration: 0.3 }
+    }
+  };
+
   return (
-    <div>
+    <motion.div 
+      variants={appVariants}
+      initial="initial"
+      animate="animate"
+    >
       <Toaster />
       {!isOwnerPath && <Navbar />} {/* Show Navbar only if not on owner path */}
       {showHotelReg && <HotelReg />}
       <div className="min-h-[70vh]">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/rooms" element={<AllRooms />} />
-          <Route path="/rooms/:id" element={<RoomDetails />} />
-          <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/loader/:nextUrl" element={<Loader />} />
-          <Route path="/owner" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="add-room" element={<AddRoom />} />
-            <Route path="list-room" element={<ListRoom />} />
-          </Route>
-        </Routes>
+        <AnimatedRoutes />
       </div>
       <Footer />
-    </div>
+      <BackToTopButton />
+    </motion.div>
   );
 };
 

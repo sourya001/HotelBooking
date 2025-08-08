@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
+import PageTransition from "../components/PageTransition";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useAppContext } from "../context/AppContext";
 
@@ -52,7 +54,8 @@ const MyBookings = () => {
   }, [user]);
 
   return (
-    <div className="py-28 md:pb-35 md:pt-32 px-4 md:px-16 lg:px-24 xl:px-32">
+    <PageTransition>
+      <div className="py-28 md:pb-35 md:pt-32 px-4 md:px-16 lg:px-24 xl:px-32">
       <Title
         title="My Bookings"
         subTitle="Easily manage your past, current, and upcoming hotel reservations in one place. Plan your trips seamlessly with just a few clicks"
@@ -140,7 +143,8 @@ const MyBookings = () => {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 

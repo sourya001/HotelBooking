@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Title from "../../components/Title";
 import { assets, dashboardDummyData } from "../../assets/assets";
 import { useAppContext } from "../../context/AppContext";
+import PageTransition from "../../components/PageTransition";
+import { motion } from "framer-motion";
 const Dashboard = () => {
   const { currency, user, getToken, toast, axios } = useAppContext();
   const [loading, setLoading] = useState(false);
@@ -55,7 +57,8 @@ const Dashboard = () => {
   }, [user]);
 
   return (
-    <div>
+    <PageTransition>
+      <div>
       <Title
         align="left"
         font="outfit"
@@ -71,7 +74,13 @@ const Dashboard = () => {
         <>
           <div className="flex gap-4 my-8">
             {/* ---- ---Total Bookings-- */}
-            <div className="bg-primary/3 border border-primary/10 rounded flex p-4 pr-8">
+            <motion.div 
+              className="bg-primary/3 border border-primary/10 rounded flex p-4 pr-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+            >
               <img
                 src={assets.totalBookingIcon}
                 alt=""
@@ -83,9 +92,15 @@ const Dashboard = () => {
                   {dashboardData.totalBookings}
                 </p>
               </div>
-            </div>
+            </motion.div>
             {/* ---- ---Total Revenue-- */}
-            <div className="bg-primary/3 border border-primary/10 rounded flex p-4 pr-8">
+            <motion.div 
+              className="bg-primary/3 border border-primary/10 rounded flex p-4 pr-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+            >
               <img
                 src={assets.totalRevenueIcon}
                 alt=""
@@ -97,7 +112,7 @@ const Dashboard = () => {
                   {currency} {dashboardData.totalRevenue}
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* ------- Recent Bookings ---------- */}
@@ -163,7 +178,8 @@ const Dashboard = () => {
           </div>
         </>
       )}
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 

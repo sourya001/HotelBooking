@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Title from "../../components/Title";
 import { assets } from "../../assets/assets";
 import { useAppContext } from "../../context/AppContext";
+import PageTransition from "../../components/PageTransition";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
 const AddRoom = () => {
@@ -88,7 +90,8 @@ const AddRoom = () => {
     }
   };
   return (
-    <form onSubmit={onSubmitHandler}>
+    <PageTransition>
+      <form onSubmit={onSubmitHandler}>
       <Title
         align="left"
         font="outfit"
@@ -181,7 +184,8 @@ const AddRoom = () => {
       >
         {loading ? "Adding..." : "Add Room"}
       </button>
-    </form>
+      </form>
+    </PageTransition>
   );
 };
 
